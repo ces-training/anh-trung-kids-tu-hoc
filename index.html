@@ -1,46 +1,141 @@
 <!doctype html>
 <html lang="vi"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Anh – Trung – Kids · Khoá học tự học</title>
 <meta property="og:title" content="Anh – Trung – Kids · Khoá học Little Seed → Seedling">
 <meta property="og:description" content="Học một lần, được hai ngôn ngữ. 198 ngày học Anh và Trung tại nhà: Little Seed rồi Seedling. Unit 1 học thử miễn phí; gói 3 tháng, 6 tháng, 1 năm.">
 <meta property="og:image" content="https://ces-training.github.io/anh-trung-kids-tu-hoc/xem-truoc/tai-nguyen/trang/the_gioi_seed.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--red:#E3262E;--teal:#1FA5A0;--green:#3BB273;--ink:#3a2a1a;--bg:#FFF6E3;--card:#fff;--line:#e8dcc4;--muted:#6b5a44}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f3ead9;--bg:#1d2a22;--card:#26372d;--line:#3a5244;--muted:#c9bda8}}
+/* Bố cục "sảnh trò chơi" như web lớp offline: thanh vàng bên trái, nền sọc kem, ô tranh lớn viền màu */
+:root{--red:#E3262E;--red-dark:#B5171E;--teal:#1FA5A0;--green:#3BB273;--ink:#3A2A1A;--muted:#6b5a44;--side:96px;--gap:clamp(10px,1.8vh,16px);color-scheme:light}
 *{box-sizing:border-box}
-body{margin:0;font-family:"Nunito",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
-main{max-width:860px;margin:0 auto;padding:28px 16px 40px}
-.kick{display:inline-block;background:var(--red);color:#fff;border-radius:999px;padding:3px 14px;font-weight:800;font-size:14px}
-h1{font-size:clamp(26px,5vw,40px);margin:10px 0 4px;line-height:1.1}
-p.lead{margin:0 0 20px;font-size:17px;line-height:1.5}
-.path{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
-.step{flex:1 1 240px;display:block;background:var(--card);color:inherit;text-decoration:none;border-radius:18px;padding:18px;box-shadow:0 4px 0 rgba(58,42,26,.18);border-top:8px solid var(--c)}
-.step b{display:block;font-size:24px;margin-bottom:4px}.step small{color:var(--muted);line-height:1.5;display:block}
-.step .tag{display:inline-block;font-size:12.5px;font-weight:800;border-radius:999px;padding:2px 10px;margin-bottom:6px;background:var(--c);color:#fff}
-.arrow{align-self:center;font-size:28px;font-weight:900;color:var(--teal)}
-@media (max-width:560px){.arrow{transform:rotate(90deg);width:100%;text-align:center}}
-.go{display:inline-block;margin-top:12px;background:var(--green);color:#fff;font-weight:800;border-radius:14px;padding:10px 16px;text-decoration:none}
-.goi{margin-top:22px;background:var(--card);border-radius:18px;padding:16px 18px}
-.goi h2{margin:0 0 8px;font-size:20px}
-.gs{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
-.g{border:2px solid var(--line);border-radius:14px;padding:12px}.g b{display:block;font-size:19px}.g small{color:var(--muted);line-height:1.5}
-.goi ul{margin:12px 0 0;padding-left:20px;line-height:1.7}
-.foot{margin-top:22px;font-size:14px;color:var(--muted)}.foot a{color:inherit}
+html,body{margin:0}
+body{font-family:'Be Vietnam Pro',system-ui,sans-serif;color:var(--ink);min-height:100vh;min-height:100dvh;
+  background:#FFF6DB url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M0 80L80 0' stroke='%23FFE7A6' stroke-width='18'/%3E%3C/svg%3E")}
+h1,h2,.ht-lb b,.sd-btn,.kick,.tag{font-family:'Baloo 2','Be Vietnam Pro',system-ui,sans-serif}
+
+/* thanh bên trái */
+.side{position:fixed;left:0;top:0;bottom:0;width:var(--side);z-index:5;background:linear-gradient(180deg,#FFD84D,#FFC72C);border-right:4px solid #E9A900;
+  display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 6px;padding-top:max(env(safe-area-inset-top),12px);overflow-y:auto}
+.sd-logo{display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--red-dark);font-weight:800;font-size:11px;line-height:1.1;text-align:center;margin-bottom:4px}
+.sd-logo img{width:58px;height:58px;object-fit:contain;object-position:50% 100%;background:#fff;border-radius:50%;border:3px solid var(--red);padding:2px;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.sd-logo span{margin-top:3px}
+.sd-btn{width:100%;border-radius:16px;padding:7px 2px 5px;display:flex;flex-direction:column;align-items:center;gap:1px;color:#fff;text-decoration:none;font-weight:800;font-size:13px;line-height:1.1;
+  box-shadow:0 4px 0 rgba(0,0,0,.2);background:var(--b);transition:transform .12s;text-align:center}
+.sd-btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.sd-ic{font-size:26px;line-height:1}
+.c1{--b:#2F6FD6}.c2{--b:#3BB273}.c3{--b:#7B5CD6}.c4{--b:#F28C00}.c5{--b:#E3262E}
+.sd-sp{flex:1}
+
+/* màn chính */
+main{margin-left:var(--side);padding:var(--gap);display:flex;flex-direction:column;gap:var(--gap);max-width:calc(1280px + var(--side))}
+.top{display:flex;flex-direction:column;gap:4px}
+.kick{align-self:flex-start;background:var(--red);color:#fff;border-radius:999px;padding:2px 14px;font-weight:800;font-size:15px}
+h1{margin:0;font-size:clamp(28px,4.6vw,44px);line-height:1.05;color:var(--red-dark);text-shadow:0 3px 0 #fff}
+.lead{margin:2px 0 0;font-size:17px;line-height:1.5;max-width:900px;background:rgba(255,255,255,.85);border-radius:14px;padding:8px 14px;align-self:flex-start}
+
+/* ô tranh */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap)}
+.ht{position:relative;display:flex;flex-direction:column;border:5px solid var(--tc);border-radius:22px;background:#fff;overflow:hidden;text-decoration:none;color:var(--ink);
+  box-shadow:0 6px 0 rgba(58,42,26,.18);transition:transform .15s;animation:pop .4s both}
+a.ht:hover{transform:translateY(-3px)}
+.ht-img{display:block;aspect-ratio:4/3;background:#FFF4CC center/cover no-repeat}
+.big{grid-column:span 2}.big .ht-img{aspect-ratio:16/8}
+.ht-lb{background:var(--tc);color:#fff;padding:8px 14px 10px;display:flex;flex-direction:column;gap:2px;line-height:1.25;flex:1}
+.ht-lb b{font-size:clamp(19px,2.2vw,26px);line-height:1.1;text-shadow:0 2px 0 rgba(0,0,0,.15)}
+.ht-lb small{font-size:14.5px;font-weight:600;opacity:.96}
+.small .ht-lb b{font-size:21px}
+.tag{position:absolute;top:10px;left:10px;background:#fff;color:var(--tc);border-radius:999px;padding:2px 12px;font-weight:800;font-size:14px;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.go{position:absolute;right:12px;top:10px;background:var(--red);color:#fff;border-radius:999px;padding:5px 16px;font-weight:800;font-size:17px;box-shadow:0 4px 0 var(--red-dark);
+  font-family:'Baloo 2',sans-serif;animation:glow 1.6s ease-in-out infinite}
+.lock{position:absolute;right:12px;top:10px;background:#fff;border-radius:999px;padding:2px 12px;font-weight:800;font-size:14px;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.arrow{position:absolute;left:calc(50% - 22px);top:28%;z-index:2;width:44px;height:44px;border-radius:50%;background:#fff;color:var(--teal);display:grid;place-items:center;font-size:26px;font-weight:900;box-shadow:0 4px 0 rgba(0,0,0,.15)}
+.wrap{position:relative}
+.wrap .grid{grid-template-columns:1fr 1fr}
+.wrap .big{grid-column:auto}
+@keyframes pop{from{opacity:0;transform:scale(.94)}}
+@keyframes glow{50%{box-shadow:0 4px 0 var(--red-dark),0 0 0 7px rgba(227,38,46,.3)}}
+
+/* gói học + ghi chú */
+.goi-h{display:flex;align-items:center;gap:10px;margin:4px 0 0}
+.goi-h h2{margin:0;font-size:26px;color:var(--red-dark);text-shadow:0 2px 0 #fff}
+.note{background:#fff;border:4px solid #FFC72C;border-radius:18px;padding:10px 16px 10px 34px;margin:0;line-height:1.7;font-size:16px;box-shadow:0 5px 0 rgba(58,42,26,.12)}
+.foot{margin:0;font-size:15px;color:var(--muted);background:rgba(255,255,255,.85);border-radius:12px;padding:6px 12px;align-self:flex-start}
+.foot a{color:var(--red-dark);font-weight:700}
+
+/* điện thoại: thanh trên cùng thay thanh trái */
+@media (max-width:760px){
+  :root{--side:0px}
+  .side{position:sticky;top:0;bottom:auto;width:100%;height:auto;flex-direction:row;padding:8px 10px;padding-top:max(env(safe-area-inset-top),8px);border-right:0;border-bottom:4px solid #E9A900;overflow-x:auto}
+  .sd-logo{margin:0 4px 0 0}.sd-logo img{width:44px;height:44px}.sd-logo span{display:none}
+  .sd-btn{width:auto;min-width:64px;padding:5px 8px 4px;font-size:12px}.sd-ic{font-size:20px}
+  .sd-sp{display:none}
+  .grid{grid-template-columns:1fr 1fr}
+  .wrap .grid{grid-template-columns:1fr}
+  .arrow{display:none}
+  .big .ht-img{aspect-ratio:16/9}
+  .small .ht-img{aspect-ratio:4/3}
+  .small .ht-lb small{font-size:13px}
+}
+@media (prefers-reduced-motion:reduce){.ht,.go{animation:none}}
 </style></head>
-<body><main>
-<span class="kick">Học một lần, được hai ngôn ngữ</span>
-<h1>Anh – Trung – Kids · Khoá học tự học</h1>
-<p class="lead">Mỗi ngày khoảng 10 phút học tiếng Anh và tiếng Trung cùng Bông, Leo, Anna, Xiaomei. Khoá học đi lần lượt hai chặng, mỗi chặng 99 ngày: học xong <b>Little Seed</b> thì <b>Seedling</b> tự mở, không học nhảy cóc.</p>
-<div class="path">
-  <a class="step" style="--c:var(--green)" href="little-seed/"><span class="tag">Chặng 1 · 99 ngày</span><b>🌱 Little Seed</b><small>Bé 5–8 tuổi mới bắt đầu tiếng Anh, tiếng Trung. Unit 1 học thử miễn phí.</small><span class="go">Bắt đầu học</span></a>
-  <div class="arrow" aria-hidden="true">→</div>
-  <a class="step" style="--c:var(--teal)" href="seedling/"><span class="tag">Chặng 2 · 99 ngày</span><b>🌿 Seedling</b><small>Mở khi con học xong 99 ngày Little Seed, dùng chính mã khoá học. Hướng tới Cambridge Starters và YCT 1.</small></a>
+<body>
+<nav class="side" aria-label="Lối tắt">
+  <a class="sd-logo" href="./" aria-label="Trang chủ"><img src="xem-truoc/tai-nguyen/nhan-vat/huou_huou1_a.webp" alt=""><span>Anh – Trung<br>Kids</span></a>
+  <a class="sd-btn c2" href="little-seed/"><span class="sd-ic">🌱</span>Học thử</a>
+  <a class="sd-btn c1" href="seedling/"><span class="sd-ic">🌿</span>Seedling</a>
+  <a class="sd-btn c4" href="#goi"><span class="sd-ic">🎁</span>Gói học</a>
+  <a class="sd-btn c5" href="tel:0974840845"><span class="sd-ic">📞</span>Hotline</a>
+  <span class="sd-sp"></span>
+  <a class="sd-btn c3" href="quan-tri/"><span class="sd-ic">🔑</span>Đội CES</a>
+</nav>
+
+<main>
+<div class="top">
+  <span class="kick">Học một lần, được hai ngôn ngữ</span>
+  <h1>Anh – Trung – Kids · Khoá học tự học</h1>
+  <p class="lead">Mỗi ngày khoảng 10 phút học tiếng Anh và tiếng Trung cùng Bông, Leo, Anna, Xiaomei. Khoá học đi lần lượt hai chặng, mỗi chặng 99 ngày: học xong <b>Little Seed</b> thì <b>Seedling</b> tự mở, không học nhảy cóc.</p>
 </div>
-<div class="goi"><h2>Gói học</h2>
-<div class="gs"><div class="g"><b>3 tháng</b><small>Vừa đủ một chặng nếu con học đều mỗi ngày.</small></div>
-<div class="g"><b>6 tháng</b><small>Đủ cả hai chặng Little Seed và Seedling.</small></div>
-<div class="g"><b>1 năm</b><small>Cả hai chặng, thong thả học và ôn lại.</small></div></div>
-<ul><li>Một mã khoá học dùng cho cả hai chặng; hạn tính từ ngày ba mẹ nhập mã lần đầu</li><li>Mỗi mã dùng trên 2 máy; gia hạn giữ nguyên bài và sao của con</li></ul></div>
+
+<div class="wrap">
+  <div class="grid">
+    <a class="ht big" style="--tc:var(--green)" href="little-seed/">
+      <span class="ht-img" style="background-image:url('xem-truoc/tai-nguyen/trang/the_gioi_seed.webp')"></span>
+      <span class="tag">Chặng 1 · 99 ngày</span><span class="go">Bắt đầu học</span>
+      <span class="ht-lb"><b>🌱 Little Seed</b><small>Bé 5–8 tuổi mới bắt đầu tiếng Anh, tiếng Trung. Unit 1 học thử miễn phí.</small></span>
+    </a>
+    <a class="ht big" style="--tc:var(--teal)" href="seedling/">
+      <span class="ht-img" style="background-image:url('xem-truoc/tai-nguyen/trang/trang_chu_hero.webp');background-position:60% 60%"></span>
+      <span class="tag">Chặng 2 · 99 ngày</span><span class="lock">🔒 Sau Little Seed</span>
+      <span class="ht-lb"><b>🌿 Seedling</b><small>Mở khi con học xong 99 ngày Little Seed, dùng chính mã khoá học. Hướng tới Cambridge Starters và YCT 1.</small></span>
+    </a>
+  </div>
+  <div class="arrow" aria-hidden="true">→</div>
+</div>
+
+<div class="goi-h" id="goi"><h2>🎁 Gói học</h2></div>
+<div class="grid">
+  <div class="ht small" style="--tc:#F28C00">
+    <span class="ht-img" style="background-image:url('xem-truoc/tai-nguyen/trang/ls_home.webp')"></span>
+    <span class="ht-lb"><b>3 tháng</b><small>Vừa đủ một chặng nếu con học đều mỗi ngày.</small></span>
+  </div>
+  <div class="ht small" style="--tc:#2F6FD6">
+    <span class="ht-img" style="background-image:url('xem-truoc/tai-nguyen/trang/ls_school.webp')"></span>
+    <span class="ht-lb"><b>6 tháng</b><small>Đủ cả hai chặng Little Seed và Seedling.</small></span>
+  </div>
+  <div class="ht small" style="--tc:#7B5CD6">
+    <span class="ht-img" style="background-image:url('xem-truoc/tai-nguyen/trang/ls_man_khen.webp')"></span>
+    <span class="ht-lb"><b>1 năm</b><small>Cả hai chặng, thong thả học và ôn lại.</small></span>
+  </div>
+  <a class="ht small" style="--tc:var(--red)" href="tel:0974840845">
+    <span class="ht-img" style="background:#DDEBFF url('xem-truoc/tai-nguyen/nhan-vat/huou_huou1_a.webp') 50% 100%/auto 92% no-repeat"></span>
+    <span class="ht-lb"><b>Mua gói, gia hạn</b><small>Hotline 0974.840.845</small></span>
+  </a>
+</div>
+
+<ul class="note"><li>Một mã khoá học dùng cho cả hai chặng; hạn tính từ ngày ba mẹ nhập mã lần đầu</li><li>Mỗi mã dùng trên 2 máy; gia hạn giữ nguyên bài và sao của con</li></ul>
 <p class="foot">Mua gói, gia hạn: Hotline <a href="tel:0974840845">0974.840.845</a> · Đội CES: <a href="quan-tri/">Trang quản trị</a></p>
-</main></body></html>
+</main>
+</body></html>
