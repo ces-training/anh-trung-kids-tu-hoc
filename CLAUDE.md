@@ -1,8 +1,9 @@
-# Quy tắc cho Claude và mọi người sửa kho này (chị Duyên chốt 21/11/2026)
+# Quy tắc cho Claude và mọi người sửa kho này (chị Duyên chốt 21/11/2026, sửa 24/11/2026)
 
-1. **Nội dung web đã khoá.** Không sửa bài học, khung web, tranh, giọng (mọi tệp trong `little-seed/`, `seedling/`, `chung/`, `xem-truoc/`, `chuong-trinh/`, `lop-zoom/`, `index.html`, trừ dòng nối máy chủ `SDL_API`); luật khoá học nối tiếp Little Seed → Seedling và gói 3 tháng / 6 tháng / 1 năm (chị chốt 24/11/2026) cũng là nội dung.
-   Cần đổi nội dung: tạo nhánh mới và mở Pull Request; chỉ chị Duyên bấm **Merge pull request** trên GitHub mới vào được `main` (Claude đẩy bằng chính tài khoản ces-training nên GitHub không cho chị bấm Approve; nút Merge là bước duyệt). Claude không tự gộp PR, không đẩy thẳng lên `main`.
-   Lấy bài mới từ web lớp offline: `cong-cu/lay_bai_tu_web_offline.py` (xem README). Kho web lớp offline chỉ được đọc.
-   Không chép thay đổi của web tự học sang web lớp offline hay web cuộc thi, và ngược lại không sửa hai web đó từ đây.
-2. **Được làm trong các cuộc hội thoại sau:** việc về quyền quản trị (tài khoản đội, vai trò) và về dữ liệu (đọc, tổng hợp, xuất báo cáo từ Sheet, cấp mã, gia hạn, đổi gói trên trang quản trị hoặc Sheet).
-3. Không ai được dán mật khẩu, khoá API vào kho này.
+1. **Tách web theo Project.** Kho này là web tự học của Project "Bán WEB tự học". Từ đây không sửa, không đẩy, không mở Pull Request vào web lớp offline (`Anh-Trung-Kids-CES/hoc.mot.lan.duoc.hai.ngon.ngu`, chỉ được đọc để lấy bài mới) hay web cuộc thi (`ces-training/anh-trung-kids-cuoc-thi-7-chang`). Không chép thay đổi của web tự học sang hai web đó, và ngược lại.
+2. **Sửa web tự học trực tiếp** (chị đổi luật 24/11/2026): chị Duyên yêu cầu sửa gì trong chat (bài, khung web, tranh, giọng, trang giới thiệu, gói, luật khoá học nối tiếp) thì Claude sửa, kiểm tra rồi đẩy thẳng lên `main` và báo chị kết quả, không bắt chị bấm Merge.
+   - Kiểm tra trước khi đẩy: `node --check` các tệp .js đã đổi; mở trang đã đổi bằng trình duyệt cỡ máy tính và điện thoại, không lỗi JS, không tệp 404.
+   - Hỏi chị trước khi làm: xoá nhiều tệp, lấy bài mới làm đổi số tệp lớn bất thường, đổi máy chủ `apps-script/Code.gs` (sau khi đẩy, chị phải dán lại vào Apps Script).
+   - Lỗi nội dung bài học: báo chị sửa ở Project "Chương trình Anh - Trung 9 level" rồi lấy bài lại bằng `cong-cu/lay_bai_tu_web_offline.py` (xem README); không sửa tay các tệp sinh tự động (`*-data.js`).
+3. **Việc quản trị và dữ liệu** làm ngay: tài khoản đội, vai trò, đọc, tổng hợp, xuất báo cáo từ Sheet, cấp mã, gia hạn, đổi gói trên trang quản trị hoặc Sheet. Xoá hoặc ghi đè hàng loạt thì hỏi chị trước.
+4. Không ai được dán mật khẩu, khoá API vào kho này. Không lộ tên ba mẹ, số điện thoại, PIN của con ra kho hay trang công khai.

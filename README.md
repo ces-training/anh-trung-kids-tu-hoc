@@ -15,13 +15,13 @@ Tách từ kho `Anh-Trung-Kids-CES/hoc.mot.lan.duoc.hai.ngon.ngu` ngày 21/11/20
 - Sau này thêm Canopy vào gói 1 năm: thêm `'cp'` vào `LO_TRINH` (apps-script/Code.gs), cột `mo_cp`, và web `canopy/` dùng `chung/mo-unit-dau.js`.
 - Trang quản trị: Mã kích hoạt (cấp, gia hạn, lọc theo hạn), Tổng quan, Học sinh, Máy & PIN, Điểm danh & buổi học, Sao & quà, Tài nguyên, Đội quản trị.
 - Góc vinh danh video của lớp offline đã tắt ở bản này (video các con lớp offline không hiện cho khách mua gói).
-- Cách bật máy chủ: `apps-script/HUONG-DAN.md`. Khoá nội dung: `CLAUDE.md`.
+- Cách bật máy chủ: `apps-script/HUONG-DAN.md`. Luật sửa kho: `CLAUDE.md`.
 
 ## Lấy bài mới từ web lớp offline
 ```
 git clone --depth 1 https://github.com/Anh-Trung-Kids-CES/hoc.mot.lan.duoc.hai.ngon.ngu /tmp/nguon
 git switch -c cap-nhat-bai-<ngày>
 python3 cong-cu/lay_bai_tu_web_offline.py /tmp/nguon --thu   # xem trước
-python3 cong-cu/lay_bai_tu_web_offline.py /tmp/nguon         # chép thật, rồi mở Pull Request cho chị Duyên bấm Merge
+python3 cong-cu/lay_bai_tu_web_offline.py /tmp/nguon         # chép thật, kiểm tra rồi đẩy lên main (luật: CLAUDE.md)
 ```
 Công cụ giữ nguyên phần riêng của web tự học (đăng nhập khoá học `chung/mo-unit-dau.js`, dòng SDL_API, tắt Góc vinh danh, chữ "chặng 1/2"). Bản vá không khớp thì dừng, không ghi gì.
