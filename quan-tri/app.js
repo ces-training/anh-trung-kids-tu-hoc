@@ -199,12 +199,12 @@ function vMa() {
   const cnt = { cho: 0, dung: 0, sap: 0, het: 0, td: 0 };
   all.forEach(k => { const t = maTT(k); if (t[1] === 'Chưa kích hoạt') cnt.cho++; else if (t[1] === 'Hết hạn') cnt.het++; else if (t[1] === 'Trọn đời') cnt.td++; else if (t[0] === 'a') cnt.sap++; else cnt.dung++; });
   const loc = k => { const t = maTT(k); return !S.maF || (S.maF === 'cho' && t[1] === 'Chưa kích hoạt') || (S.maF === 'het' && t[1] === 'Hết hạn') || (S.maF === 'sap' && t[0] === 'a') || (S.maF === 'td' && t[1] === 'Trọn đời') || (S.maF === 'dung' && t[0] === 'g' && t[1] !== 'Trọn đời'); };
-  const list = all.filter(loc).filter(k => !q || (k.ten + ' ' + k.id + ' ' + (k.sdt || '')).toLowerCase().includes(q)).sort((a, b) => (b.cap_luc || 0) - (a.cap_luc || 0));
+  const list = all.filter(loc).filter(k => !q || [k.ten, k.id, k.sdt, k.ph, k.tda, k.tdt].join(' ').toLowerCase().includes(q)).sort((a, b) => (b.cap_luc || 0) - (a.cap_luc || 0));
   const kq = S.maKq ? `<div class="card"><h2>Vừa cấp ${S.maKq.kids.length} mã · ${esc(S.maKq.goi)}</h2><p class="muted sm">Bấm “Chép tin Zalo” để gửi ba mẹ. PIN chỉ gửi riêng cho từng nhà.</p>
     <div class="att-scroll"><table class="tbl"><thead><tr><th>Con</th><th>Mã</th><th>PIN</th><th>SĐT</th><th></th></tr></thead><tbody>${S.maKq.kids.map(k => `<tr><td>${esc(k.ten)}</td><td><code>${esc(k.id)}</code></td><td><code class="pin">${esc(k.pin)}</code></td><td>${esc(k.sdt || '')}</td><td><button class="ghost sm" type="button" data-copy="${esc(tinGui(k, S.maKq.goi))}">📋 Chép tin Zalo</button></td></tr>`).join('')}</tbody></table></div>
     <div class="row" style="margin-top:8px"><button class="ghost" type="button" id="maKqX">Ẩn danh sách vừa cấp</button></div></div>` : '';
   const rows = list.map(k => { const t = maTT(k);
-    return `<tr><td><b>${esc(k.ten)}</b>${k.sdt ? `<br><span class="muted sm">${esc(k.sdt)}</span>` : ''}${k.gcb ? `<br><span class="muted sm">${esc(k.gcb)}</span>` : ''}</td>
+    return `<tr><td><b>${esc(k.ten)}</b>${k.sdt ? `<br><span class="muted sm">${esc(k.sdt)}</span>` : ''}${k.ph ? `<br><span class="muted sm">Ba mẹ: ${esc(k.ph)}</span>` : ''}${k.ns ? `<br><span class="muted sm">Sinh ${esc(k.ns)} (${new Date().getFullYear() - k.ns} tuổi)</span>` : ''}${k.tda ? `<br><span class="muted sm">Anh: ${esc(k.tda)}</span>` : ''}${k.tdt ? `<br><span class="muted sm">Trung: ${esc(k.tdt)}</span>` : ''}${k.gcb ? `<br><span class="muted sm">${esc(k.gcb)}</span>` : ''}</td>
       <td><code>${esc(k.id)}</code><br>${k.pin ? `<code class="pin">${esc(k.pin)}</code>` : ''}</td>
       <td>${esc(GOI_TEN[k.goi] || '—')}${k.goi && k.goi !== 'tron_doi' && k.so_thang ? `<br><span class="muted sm">tổng ${k.so_thang} tháng</span>` : ''}</td>
       <td><span class="chip ${t[0]}">${esc(t[1])}</span><br><span class="muted sm">${esc(t[2])}</span></td>
@@ -212,9 +212,11 @@ function vMa() {
       <td class="muted sm">${esc(k.cap || '')}${k.cap_luc ? '<br>' + dmy(k.cap_luc) : ''}</td>
       <td><select data-gh="${esc(k.id)}" aria-label="Gia hạn ${esc(k.ten)}"><option value="">Gia hạn…</option>${GOI.map(([v, n]) => `<option value="${v}">+ ${n}</option>`).join('')}</select>
         ${k.pin ? `<button class="ghost sm" type="button" data-copy="${esc(tinGui(k, GOI_TEN[k.goi] || ''))}">📋 Tin</button>` : ''} <button class="ghost sm" type="button" data-masua="${esc(k.id)}">Sửa</button></td></tr>`; }).join('');
-  return `${kq}<div class="card"><h2>Cấp mã khoá học · Little Seed → Seedling</h2>
-    <p class="muted">Mỗi dòng một bạn: <b>tên con</b>, có thể thêm dấu phẩy và <b>số điện thoại</b> ba mẹ (ví dụ: <i>Minh An, 0912345678</i>). Một mã dùng cho cả khoá: học xong 99 ngày Little Seed thì Seedling tự mở, không nhảy cóc. Hạn tính từ lần ba mẹ đăng nhập đầu tiên; hết hạn thì con chỉ học được Unit 1 Little Seed.</p>
-    <textarea id="maNew" rows="3" style="width:100%" placeholder="Minh An, 0912345678">${esc(S.maNew)}</textarea>
+  const sk = S.maSua && all.find(x => x.id === S.maSua), fld = (id, lb, v, ml, ph) => `<label class="sm" for="${id}">${lb}</label><input id="${id}" maxlength="${ml}" value="${esc(v || '')}" ${ph ? `placeholder="${ph}"` : ''} style="width:100%">`;
+  const sua = sk ? `<div class="card" id="maSuaBox"><h2>Sửa thông tin · ${esc(sk.ten)} <code>${esc(sk.id)}</code></h2><div class="grid2" style="display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">${fld('msTen', 'Tên con', sk.ten, 40)}${fld('msNs', 'Năm sinh (4 số)', sk.ns, 4, '2018')}${fld('msPh', 'Tên ba mẹ', sk.ph, 60)}${fld('msSdt', 'SĐT ba mẹ', sk.sdt, 15)}${fld('msTda', 'Trình độ tiếng Anh', sk.tda, 100, 'ví dụ: Pre-A1, học 1 năm')}${fld('msTdt', 'Trình độ tiếng Trung', sk.tdt, 100, 'ví dụ: Chưa học')}</div>${fld('msGc', 'Ghi chú', sk.gcb, 200)}<div class="row" style="margin-top:8px"><button class="btn" type="button" id="msLuu">Lưu</button><button class="ghost" type="button" id="msHuy">Huỷ</button></div></div>` : '';
+  return `${kq}${sua}<div class="card"><h2>Cấp mã khoá học · Little Seed → Seedling</h2>
+    <p class="muted">Mỗi dòng một bạn. Cách nhanh: <b>copy các cột từ Excel/Sheet</b> rồi dán vào, theo thứ tự <b>Tên con · SĐT ba mẹ · Năm sinh · Tên ba mẹ · Trình độ Anh · Trình độ Trung</b> (cột nào chưa có thì để trống). Nếu chỉ có tên và SĐT, gõ <i>Minh An, 0912345678</i>. Một mã dùng cho cả khoá: học xong 99 ngày Little Seed thì Seedling tự mở, không nhảy cóc. Hạn tính từ lần ba mẹ đăng nhập đầu.</p>
+    <textarea id="maNew" rows="3" style="width:100%" placeholder="Minh An\t0912345678\t2018\tChị Lan\tPre-A1\tChưa học">${esc(S.maNew)}</textarea>
     <div class="row" style="margin-top:8px"><label class="sm" for="maGoi">Gói</label><select id="maGoi">${GOI.map(([v, n]) => `<option value="${v}" ${v === S.maGoi ? 'selected' : ''}>${n}</option>`).join('')}</select>
       <input id="maGc" class="grow" maxlength="200" placeholder="Ghi chú (nguồn khách, mã CTV, đơn chuyển khoản…)" value="${esc(S.maGc)}"><button class="btn" type="button" id="maTao">➕ Cấp mã</button></div></div>
   <div class="card"><div class="row"><h2 class="grow">Danh sách mã (${all.length})</h2><input id="maQ" placeholder="Tìm tên, mã, SĐT" value="${esc(S.maQ)}"></div>
@@ -231,7 +233,7 @@ function bindMa(root) {
   const qq = $('#maQ', root); if (qq) qq.oninput = () => { S.maQ = qq.value; const p = qq.selectionStart; draw(); const n = $('#maQ'); n.focus(); n.setSelectionRange(p, p); };
   $$('[data-maf]', root).forEach(b => b.onclick = () => { S.maF = b.dataset.maf; draw(); });
   const tao = $('#maTao', root); if (tao) tao.onclick = async () => {
-    const ds = S.maNew.split('\n').map(x => x.trim()).filter(Boolean).map(x => { const p = x.split(/[,;\t]/); return { ten: p[0].trim(), sdt: (p[1] || '').trim() }; });
+    const ds = S.maNew.split('\n').map(x => x.trim()).filter(Boolean).map(x => { const p = x.split(x.includes('\t') ? '\t' : /[,;]/).map(v => v.trim()); return { ten: p[0], sdt: p[1] || '', ns: p[2] || '', ph: p[3] || '', tda: p[4] || '', tdt: p[5] || '' }; });
     if (!ds.length) return toast('Nhập ít nhất một tên con');
     if (!confirm(`Cấp ${ds.length} mã khoá học ${GOI_TEN[S.maGoi]} (Little Seed → Seedling)?`)) return;
     tao.disabled = true; const r = await call('qt_ma_tao', { goi: S.maGoi, ds, gc: S.maGc }); tao.disabled = false;
@@ -242,9 +244,12 @@ function bindMa(root) {
     if (!confirm(`Gia hạn ${GOI_TEN[v]} cho ${k.ten} (${k.id})?`)) { sl.value = ''; return; }
     const r = await call('qt_giahan', { id: k.id, goi: v }); if (!r.ok) { sl.value = ''; return toast(r.err || 'Chưa gia hạn được'); }
     const t = maTT(r.kid); toast(`Đã gia hạn ${k.ten}: ${t[1]}${t[2] ? ' · ' + t[2] : ''}`); refresh(true); });
-  $$('[data-masua]', root).forEach(b => b.onclick = async () => { const k = S.d.kids.find(x => x.id === b.dataset.masua);
-    const ten = prompt('Tên con:', k.ten); if (ten === null) return; const sdt = prompt('SĐT ba mẹ:', k.sdt || ''); if (sdt === null) return; const gcb = prompt('Ghi chú:', k.gcb || ''); if (gcb === null) return;
-    const r = await call('qt_ma_sua', { id: k.id, ten, sdt, gc: gcb }); if (!r.ok) return toast(r.err || 'Chưa lưu được'); toast('Đã lưu'); refresh(true); });
+  $$('[data-masua]', root).forEach(b => b.onclick = () => { S.maSua = b.dataset.masua; draw(); const bx = $('#maSuaBox'); if (bx) { bx.scrollIntoView({ block: 'center' }); $('#msTen').focus(); } });
+  const hu = $('#msHuy', root); if (hu) hu.onclick = () => { S.maSua = null; draw(); };
+  const lu = $('#msLuu', root); if (lu) lu.onclick = async () => { const v = id => $('#' + id).value;
+    if (!v('msTen').trim()) return toast('Tên con không được để trống');
+    lu.disabled = true; const r = await call('qt_ma_sua', { id: S.maSua, ten: v('msTen'), ns: v('msNs'), ph: v('msPh'), sdt: v('msSdt'), tda: v('msTda'), tdt: v('msTdt'), gc: v('msGc') }); lu.disabled = false;
+    if (!r.ok) return toast(r.err || 'Chưa lưu được'); S.maSua = null; toast('Đã lưu'); refresh(true); };
 }
 
 /* =====================================================================

@@ -23,7 +23,7 @@ Máy chủ này **riêng** cho web tự học, không đụng Sheet và máy ch�
 3. Mọi việc cấp mã, gia hạn, sửa tài khoản ghi ở tab **NhatKyQT**.
 
 ## 4. Cấp mã, gia hạn
-- Tab **Mã kích hoạt** (ở level Little Seed): dán tên con (thêm SĐT sau dấu phẩy), chọn gói 3 tháng, 6 tháng hoặc 1 năm → **Cấp mã** → **Chép tin Zalo** gửi từng nhà. Một mã dùng cho cả khoá: học xong 99 ngày Little Seed thì Seedling tự mở. Muốn mở Seedling sớm cho một bé (đã học xong Little Seed ở lớp), ghi `x` vào cột `mo_sd` của dòng mã đó trong tab HocSinh.
+- Tab **Mã kích hoạt** (ở level Little Seed): copy từ Excel các cột **Tên con · SĐT ba mẹ · Năm sinh · Tên ba mẹ · Trình độ Anh · Trình độ Trung** (chữ tự do, cột nào chưa có để trống) rồi dán vào ô cấp mã; hoặc chỉ gõ tên và SĐT sau dấu phẩy. Sale cũng có thể nhập thẳng vào các cột `nam_sinh`, `phu_huynh`, `trinh_do_anh`, `trinh_do_trung` của tab HocSinh, trang quản trị đọc lại ngay. Cả Quản lý và Nhân viên đều xem được; web của con và bảng cô theo PIN không nhận các thông tin này. Chọn gói 3 tháng, 6 tháng hoặc 1 năm → **Cấp mã** → **Chép tin Zalo** gửi từng nhà. Một mã dùng cho cả khoá: học xong 99 ngày Little Seed thì Seedling tự mở. Muốn mở Seedling sớm cho một bé (đã học xong Little Seed ở lớp), ghi `x` vào cột `mo_sd` của dòng mã đó trong tab HocSinh.
 - Hạn tính từ **lần đầu ba mẹ đăng nhập bằng mã + PIN**. Hết hạn: con chỉ học Unit 1, web hiện ngày hết hạn và hotline.
 - **Gia hạn**: còn hạn thì nối tiếp; đã hết hạn thì tính lại từ hôm gia hạn; chưa kích hoạt thì cộng dồn tháng. Bài và sao của con giữ nguyên.
 - Mã Little Seed không đăng nhập được web Seedling và ngược lại.

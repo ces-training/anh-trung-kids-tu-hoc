@@ -50,7 +50,7 @@
 const TAB = {
   CaiDat:  ['lop', 'ten_lop', 'pin', 'ghi_chu', 'video_folder', 'khai_giang', 'max_may'],
   HocSinh: ['lop', 'id', 'ten', 'tao', 'web', 'vi', 'ngay', 'cuoi', 'luu_cuoi', 'trang_thai', 'pin_con', 'may', 'cho_may', 'nguon',
-            'goi', 'so_thang', 'kich_hoat', 'het_han', 'sdt', 'ghi_chu_ban', 'nguoi_cap', 'cap_luc', 'mo_sd'],   // web tự học: gói, hạn dùng, người cấp
+            'goi', 'so_thang', 'kich_hoat', 'het_han', 'sdt', 'ghi_chu_ban', 'nguoi_cap', 'cap_luc', 'mo_sd', 'nam_sinh', 'phu_huynh', 'trinh_do_anh', 'trinh_do_trung'],   // web tự học: gói, hạn dùng, người cấp
   TienDo:  ['lop', 'id', 'v', 't', 'capnhat', 'do_dai', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6'],
   Thuong:  ['id', 'lop', 'kid', 'n', 'why', 'at', 'huy'],
   DoiQua:  ['code', 'lop', 'kid', 'ten', 'qua', 'ten_qua', 'sao', 'at', 'st', 'note'],
@@ -72,7 +72,7 @@ const PHIEN_GIO = 12;   // phiên đăng nhập trang quản trị giữ 12 gi�
 const LOAI_GHI = ['tien_bo', 'ho_tro', 'phu_huynh', 'hanh_vi', 'khac'];
 const LOP_MAC_DINH = [['ls', 'Little Seed · web tự học 99 ngày'], ['sd', 'Seedling · web tự học 99 ngày']];
 const TEXT_COLS = { QuanTriVien: ['user', 'muoi', 'hash'], NhatKyQT: ['user', 'lop', 'ma'], CaiDatQT: ['khoa', 'gia_tri'],
-  HocSinh: ['lop', 'id', 'ten', 'cuoi', 'pin_con', 'may', 'cho_may', 'nguon', 'goi', 'sdt', 'nguoi_cap'], TienDo: ['lop', 'id', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6'], Thuong: ['id', 'lop', 'kid'],
+  HocSinh: ['lop', 'id', 'ten', 'cuoi', 'pin_con', 'may', 'cho_may', 'nguon', 'goi', 'sdt', 'nguoi_cap', 'nam_sinh', 'phu_huynh', 'trinh_do_anh', 'trinh_do_trung'], TienDo: ['lop', 'id', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6'], Thuong: ['id', 'lop', 'kid'],
   DoiQua: ['code', 'lop', 'kid'], CaiDat: ['lop', 'pin', 'video_folder', 'khai_giang'],
   BuoiHS: ['k', 'lop', 'kid'], BuoiLop: ['k', 'lop', 'ngay'], GhiChu: ['id', 'lop', 'kid'], TaiNguyen: ['id', 'lop'] };
 const VIDEO_CACHE_GIAY = 300;   // danh sách video nhớ 5 phút: video mới thả vào Drive hiện trên web chậm nhất ~5 phút
@@ -281,7 +281,7 @@ function handleCore_(q) {
       const cfg = rows_('CaiDat').find(x => x.lop === lop) || {};
       const kids = rows_('HocSinh').filter(k => k.lop === lop), ids = new Set(kids.map(k => k.id));
       return { ok: true, v: 5, cfg: { ten_lop: cfg.ten_lop || '', khai_giang: ngay_(cfg.khai_giang) },
-        kids: kids.map(k => Object.assign(kidOut_(k), { pin: String(k.pin_con || ''), may: parseJ_(k.may), cho: parseJ_(k.cho_may) })), max_may: maxMay_(lop),
+        kids: kids.map(k => Object.assign((QT ? kidOutQT_ : kidOut_)(k), { pin: String(k.pin_con || ''), may: parseJ_(k.may), cho: parseJ_(k.cho_may) })), max_may: maxMay_(lop),
         awards: rows_('Thuong').filter(a => ids.has(a.kid)).reverse().slice(0, 400).map(awardOut_),
         orders: rows_('DoiQua').filter(o => ids.has(o.kid)).reverse().map(orderOut_),
         hs: rows_('BuoiHS').filter(r => r.lop === lop).map(hsOut_),
@@ -524,8 +524,14 @@ function norm_(k, x) {
 }
 function pinOf_(lop) { const r = rows_('CaiDat').find(x => x.lop === lop); return r ? String(r.pin).trim() : ''; }
 function readData_(o) { let s = ''; for (let i = 1; i <= 6; i++) s += String(o['d' + i] || ''); return s; }
+/* kidOut_: bản AN TOÀN, dùng cho web của con và bảng cô theo PIN. Không có SĐT, tên ba mẹ, năm sinh, trình độ, ghi chú bán hàng. */
 function kidOut_(k) { return { id: k.id, lop: k.lop, ten: k.ten, tao: k.tao, web: +k.web || 0, vi: +k.vi || 0, ngay: +k.ngay || 0, cuoi: String(k.cuoi || ''), luu: k.luu_cuoi || '', tt: k.trang_thai || '', nguon: k.nguon || '', pin: !!String(k.pin_con || '').trim(),
-  goi: String(k.goi || ''), so_thang: +k.so_thang || 0, kich: +k.kich_hoat || 0, han: hanCua_(k), mo_sd: truthy_(k.mo_sd), sdt: String(k.sdt || ''), gcb: String(k.ghi_chu_ban || ''), cap: String(k.nguoi_cap || ''), cap_luc: +k.cap_luc || 0 }; }
+  goi: String(k.goi || ''), so_thang: +k.so_thang || 0, kich: +k.kich_hoat || 0, han: hanCua_(k), mo_sd: truthy_(k.mo_sd) }; }
+/* kidOutQT_: chỉ cho tài khoản quản trị đã đăng nhập (Quản lý và Nhân viên đều xem được thông tin liên hệ). */
+function kidOutQT_(k) { return Object.assign(kidOut_(k), { sdt: String(k.sdt || ''), gcb: String(k.ghi_chu_ban || ''), cap: String(k.nguoi_cap || ''), cap_luc: +k.cap_luc || 0,
+  ns: String(k.nam_sinh || ''), ph: String(k.phu_huynh || ''), tda: String(k.trinh_do_anh || ''), tdt: String(k.trinh_do_trung || '') }); }
+function namSinh_(v) { const n = parseInt(String(v == null ? '' : v).replace(/\D/g, '').slice(0, 4), 10); return n >= 1990 && n <= new Date().getFullYear() ? String(n) : ''; }
+function chuTuDo_(v, n) { return String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, n); }
 function awardOut_(a) { return { id: String(a.id), kid: a.kid, n: +a.n || 0, why: a.why || '', at: +a.at || 0, huy: truthy_(a.huy) }; }
 function orderOut_(o) { return { code: o.code, kid: o.kid, ten: o.ten, qua: o.qua, ten_qua: o.ten_qua, sao: +o.sao || 0, at: +o.at || 0, st: o.st, note: o.note || '' }; }
 /* họ tên: bỏ khoảng trắng thừa, viết hoa chữ đầu mỗi tiếng; so khớp không phân biệt hoa thường, có lần so thêm khi bỏ dấu */
@@ -647,12 +653,12 @@ function handleQT_(q, lop, ME) {
       lop = LO_TRINH[0];
       if (!GOI[q.goi]) return { ok: false, err: 'Chọn gói' };
       let ds = q.ds; if (typeof ds === 'string') { try { ds = JSON.parse(ds); } catch (x) { ds = []; } }
-      ds = (ds || []).map(x => ({ ten: String(x.ten || '').trim().slice(0, 40), sdt: String(x.sdt || '').replace(/[^\d+]/g, '').slice(0, 15) })).filter(x => x.ten).slice(0, 60);
+      ds = (ds || []).map(x => ({ ten: String(x.ten || '').trim().slice(0, 40), sdt: String(x.sdt || '').replace(/[^\d+]/g, '').slice(0, 15), ns: namSinh_(x.ns), ph: chuTuDo_(x.ph, 60), tda: chuTuDo_(x.tda, 100), tdt: chuTuDo_(x.tdt, 100) })).filter(x => x.ten).slice(0, 60);
       if (!ds.length) return { ok: false, err: 'Nhập ít nhất một tên con.' };
       const have = new Set(rows_('HocSinh').map(x => x.id)), out = [];
       ds.forEach(x => { let id; do { id = newId_(''); } while (have.has(id)); have.add(id); const pin = newPin_();
         add_('HocSinh', { lop, id, ten: x.ten, tao: new Date(), web: 0, vi: 0, ngay: 0, cuoi: '', luu_cuoi: '', pin_con: pin, may: '', cho_may: '', nguon: 'ban_goi',
-          goi: q.goi, so_thang: GOI[q.goi][0], kich_hoat: '', het_han: q.goi === 'tron_doi' ? 'Trọn đời' : '', sdt: x.sdt, ghi_chu_ban: String(q.gc || '').slice(0, 200), nguoi_cap: ME.ten, cap_luc: new Date() });
+          goi: q.goi, so_thang: GOI[q.goi][0], kich_hoat: '', het_han: q.goi === 'tron_doi' ? 'Trọn đời' : '', sdt: x.sdt, ghi_chu_ban: String(q.gc || '').slice(0, 200), nguoi_cap: ME.ten, cap_luc: new Date(), nam_sinh: x.ns, phu_huynh: x.ph, trinh_do_anh: x.tda, trinh_do_trung: x.tdt });
         out.push({ id, ten: x.ten, pin, sdt: x.sdt });
         ghiNhatKy_(ME, 'Cấp mã ' + GOI[q.goi][1], lop, id, x.ten + (x.sdt ? ' · ' + x.sdt : '')); });
       return { ok: true, kids: out, goi: GOI[q.goi][1] };
@@ -674,14 +680,18 @@ function handleQT_(q, lop, ME) {
       set_('HocSinh', k.row, o);
       const moi = Object.assign({}, cu, o, { kich_hoat: o.kich_hoat ? o.kich_hoat.getTime() : cu.kich_hoat, so_thang: o.so_thang });
       ghiNhatKy_(ME, 'Gia hạn ' + GOI[q.goi][1], lop, cu.id, cu.ten + ' → ' + (hanCua_(moi) ? 'hết hạn ' + ngayVN_(hanCua_(moi)) : (moi.goi === 'tron_doi' ? 'trọn đời' : 'tính hạn từ lần đăng nhập đầu')));
-      return { ok: true, kid: kidOut_(moi) };
+      return { ok: true, kid: kidOutQT_(moi) };
     }
     case 'qt_ma_sua': {
       const k = find_('HocSinh', 'id', q.id); if (!k || !String(k.obj.goi || '').trim()) return { ok: false, err: 'Không có mã khoá học này' };
       lop = k.obj.lop; const o = {}; if (q.ten != null && String(q.ten).trim()) o.ten = String(q.ten).trim().slice(0, 40);
       if (q.sdt != null) o.sdt = String(q.sdt).replace(/[^\d+]/g, '').slice(0, 15);
       if (q.gc != null) o.ghi_chu_ban = String(q.gc).slice(0, 200);
-      set_('HocSinh', k.row, o); ghiNhatKy_(ME, 'Sửa thông tin mã', lop, k.obj.id, JSON.stringify(o)); return { ok: true };
+      if (q.ns != null) o.nam_sinh = namSinh_(q.ns);
+      if (q.ph != null) o.phu_huynh = chuTuDo_(q.ph, 60);
+      if (q.tda != null) o.trinh_do_anh = chuTuDo_(q.tda, 100);
+      if (q.tdt != null) o.trinh_do_trung = chuTuDo_(q.tdt, 100);
+      set_('HocSinh', k.row, o); ghiNhatKy_(ME, 'Sửa thông tin mã', lop, k.obj.id, Object.keys(o).join(', ')); return { ok: true, kid: kidOutQT_(Object.assign({}, k.obj, o)) };
     }
   }
   return null;
