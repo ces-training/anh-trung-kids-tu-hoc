@@ -193,6 +193,15 @@ function maTT(k) {   // trạng thái của một mã
 function tinGui(k, goiTen) {
   return `Dạ CES gửi ba mẹ mã khoá học Anh – Trung – Kids (Little Seed → Seedling) của bé ${k.ten}:\n• Link: ${webLink()}?con=${k.id}\n• Mã: ${k.id}\n• PIN: ${k.pin}\n• Gói: ${goiTen}, tính từ lần đăng nhập đầu tiên.\nCon học xong 99 ngày Little Seed thì Seedling tự mở, dùng chính mã này. Mỗi mã dùng được trên 2 máy. Ba mẹ giữ PIN riêng cho con nhé. Cần hỗ trợ: ${HOTLINE}.`;
 }
+function canhBao() {   // mã sắp hết hạn (≤7 ngày) và vừa hết hạn (≤30 ngày): đội cần liên hệ gia hạn
+  const ds = (S.d ? S.d.kids : []).filter(k => k.goi && k.goi !== 'tron_doi' && k.kich && k.han).map(k => ({ k, con: Math.ceil((k.han - Date.now()) / 864e5) }))
+    .filter(x => x.con <= 7 && x.con > -30).sort((a, b) => a.con - b.con);
+  if (!ds.length) return '';
+  const hs = ds.filter(x => x.con <= 0).length;
+  return `<div class="card" style="border-left:4px solid #d9822b"><h2>⏰ Cần liên hệ gia hạn (${ds.length})</h2><p class="muted sm">${ds.length - hs} mã còn ≤7 ngày, ${hs} mã vừa hết hạn trong 30 ngày qua. Bấm tên để mở hồ sơ ở tab Mã kích hoạt.</p>
+    <div class="att-scroll"><table class="tbl"><tbody>${ds.map(({ k, con }) => `<tr><td><button class="ghost sm" type="button" data-canhbao="${esc(k.id)}">${esc(k.ten)}</button></td><td>${con <= 0 ? '<span class="chip r">Hết hạn</span> ' + dmy(k.han) : `<span class="chip a">Còn ${con} ngày</span> ${dmy(k.han)}`}</td><td>${esc(k.ph || '')} ${esc(k.sdt || '')}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function bindCanhBao(root) { $$('[data-canhbao]', root).forEach(b => b.onclick = () => { S.tab = 'ma'; S.maQ = b.dataset.canhbao; draw(); }); }
 function vMa() {
   if (S.lop !== 'ls') return `<div class="card"><h2>Mã khoá học</h2><p>Mỗi bé có <b>một mã khoá học</b> dùng cho cả Little Seed và Seedling. Mã được cấp, gia hạn và xem hạn ở tab <b>Little Seed</b>. Seedling tự mở khi con học xong 99 ngày Little Seed (hoặc khi đội ghi <b>x</b> vào cột <b>mo_sd</b> của dòng mã trong Sheet).</p><button class="btn" type="button" data-lop="ls">Sang Little Seed</button></div>`;
   const all = S.d.kids.filter(k => k.goi || k.nguon === 'ban_goi'), q = S.maQ.trim().toLowerCase();
@@ -214,7 +223,7 @@ function vMa() {
         ${k.pin ? `<button class="ghost sm" type="button" data-copy="${esc(tinGui(k, GOI_TEN[k.goi] || ''))}">📋 Tin</button>` : ''} <button class="ghost sm" type="button" data-masua="${esc(k.id)}">Sửa</button></td></tr>`; }).join('');
   const sk = S.maSua && all.find(x => x.id === S.maSua), fld = (id, lb, v, ml, ph) => `<label class="sm" for="${id}">${lb}</label><input id="${id}" maxlength="${ml}" value="${esc(v || '')}" ${ph ? `placeholder="${ph}"` : ''} style="width:100%">`;
   const sua = sk ? `<div class="card" id="maSuaBox"><h2>Sửa thông tin · ${esc(sk.ten)} <code>${esc(sk.id)}</code></h2><div class="grid2" style="display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">${fld('msTen', 'Tên con', sk.ten, 40)}${fld('msNs', 'Năm sinh (4 số)', sk.ns, 4, '2018')}${fld('msPh', 'Tên ba mẹ', sk.ph, 60)}${fld('msSdt', 'SĐT ba mẹ', sk.sdt, 15)}${fld('msTda', 'Trình độ tiếng Anh', sk.tda, 100, 'ví dụ: Pre-A1, học 1 năm')}${fld('msTdt', 'Trình độ tiếng Trung', sk.tdt, 100, 'ví dụ: Chưa học')}</div>${fld('msGc', 'Ghi chú', sk.gcb, 200)}<div class="row" style="margin-top:8px"><button class="btn" type="button" id="msLuu">Lưu</button><button class="ghost" type="button" id="msHuy">Huỷ</button></div></div>` : '';
-  return `${kq}${sua}<div class="card"><h2>Cấp mã khoá học · Little Seed → Seedling</h2>
+  return `${canhBao()}${kq}${sua}<div class="card"><h2>Cấp mã khoá học · Little Seed → Seedling</h2>
     <p class="muted">Mỗi dòng một bạn. Cách nhanh: <b>copy các cột từ Excel/Sheet</b> rồi dán vào, theo thứ tự <b>Tên con · SĐT ba mẹ · Năm sinh · Tên ba mẹ · Trình độ Anh · Trình độ Trung</b> (cột nào chưa có thì để trống). Nếu chỉ có tên và SĐT, gõ <i>Minh An, 0912345678</i>. Một mã dùng cho cả khoá: học xong 99 ngày Little Seed thì Seedling tự mở, không nhảy cóc. Hạn tính từ lần ba mẹ đăng nhập đầu.</p>
     <textarea id="maNew" rows="3" style="width:100%" placeholder="Minh An\t0912345678\t2018\tChị Lan\tPre-A1\tChưa học">${esc(S.maNew)}</textarea>
     <div class="row" style="margin-top:8px"><label class="sm" for="maGoi">Gói</label><select id="maGoi">${GOI.map(([v, n]) => `<option value="${v}" ${v === S.maGoi ? 'selected' : ''}>${n}</option>`).join('')}</select>
@@ -226,6 +235,7 @@ function vMa() {
 }
 function bindMa(root) {
   if (S.tab !== 'ma') return;
+  bindCanhBao(root);
   const nw = $('#maNew', root); if (nw) nw.oninput = () => { S.maNew = nw.value; };
   const g = $('#maGoi', root); if (g) g.onchange = () => { S.maGoi = g.value; };
   const gc = $('#maGc', root); if (gc) gc.oninput = () => { S.maGc = gc.value; };
