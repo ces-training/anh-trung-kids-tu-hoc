@@ -9,7 +9,7 @@
      Máy mới mở link ?con=MÃ (hoặc ba mẹ nhập mã) → web lấy bản trên máy chủ về, gộp với bản trên máy (không bỏ ngày nào
      con đã học) rồi học tiếp. Máy chủ giữ số phiên bản: máy nào gửi bản cũ hơn sẽ được trả bản mới để gộp rồi gửi lại.
    ===================================================================== */
-const SDL_API = '';   // WEB TỰ HỌC: dán link /exec máy chủ Sheet "Anh Trung Kids Tự học" (apps-script/HUONG-DAN.md)
+const SDL_API = 'https://script.google.com/macros/s/AKfycbyLzPjzNRq0DpZFMmXqJbZ4CHR5WH-Lp43OMfJhNGMIJyRWkIO_CGGvQUKOOJdF5S_f/exec';   // WEB TỰ HỌC: dán link /exec máy chủ Sheet "Anh Trung Kids Tự học" (apps-script/HUONG-DAN.md)
 const API_ON = !!SDL_API;
 const LOP = 'sd', KEY = 'sdl';
 

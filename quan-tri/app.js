@@ -9,7 +9,7 @@
    - ?demo=1: chạy với dữ liệu giả lưu trên máy này (PIN 2468) để xem thử, không cần máy chủ.
    - Máy chủ cũ (bản 3): vẫn xem được dashboard và sao/quà; điểm danh, ghi chú, tài nguyên cần bản 4.
    ===================================================================== */
-const API = '';   // dán link /exec của máy chủ Sheet "Anh Trung Kids Tự học" (apps-script/HUONG-DAN.md)
+const API = 'https://script.google.com/macros/s/AKfycbyLzPjzNRq0DpZFMmXqJbZ4CHR5WH-Lp43OMfJhNGMIJyRWkIO_CGGvQUKOOJdF5S_f/exec';   // dán link /exec của máy chủ Sheet "Anh Trung Kids Tự học" (apps-script/HUONG-DAN.md)
 const DEMO = false;
 const HOTLINE = '0974.840.845';
 const GOI = [['3t', '3 tháng'], ['6t', '6 tháng'], ['12t', '1 năm']];   // 24/11/2026: khoá học Little Seed → Seedling
