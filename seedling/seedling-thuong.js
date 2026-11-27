@@ -85,7 +85,7 @@ function viewJourney() {
   app.innerHTML = `<div class="screen qscr hjscr"><div class="q-top"><a class="q-back" href="#/" aria-label="Về trang chủ">🧭</a><h2>Hành trình của con</h2></div>
     <div class="q-body"><div class="hj-left">
         <div class="hj-me"><span class="ava-mini big fr-${shop().ava.fr}" style="background-image:url('${avaBg()}')"><img src="${avaSrc()}" alt=""></span>
-          <div><b>${esc(P.name || 'Bạn nhỏ Seedling')}</b><small>🌱 Seedling · khoá tự học</small><div class="hj-road"><i style="width:${Math.round(m.les / TOTAL * 100)}%"></i><span>${m.les}/${TOTAL} ngày web</span></div></div></div>
+          <div><b>${esc(P.name || 'Bạn nhỏ Seedling')}</b><small>🌱 Seedling · chặng 2</small><div class="hj-road"><i style="width:${Math.round(m.les / TOTAL * 100)}%"></i><span>${m.les}/${TOTAL} ngày web</span></div></div></div>
         <div class="hj-stats">
           ${stat('📚', m.les, 'ngày web con đã học', m.les < TOTAL ? `còn ${TOTAL - m.les} ngày nữa là về đích` : 'Con đã về đích!')}
           ${stat('📅', m.days, 'ngày con đã học', `cô thưởng ${coSum()} ⭐ ở lớp`)}

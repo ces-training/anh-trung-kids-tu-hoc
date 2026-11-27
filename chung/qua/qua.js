@@ -1,5 +1,5 @@
 /* =====================================================================
-   PHÒNG ĐỔI QUÀ – ví sao, nuôi thú cưng, nuôi quái vật, Rồng trùm, vườn, avatar, quà thật (web tự học: không có học bổng).
+   PHÒNG ĐỔI QUÀ – ví sao, nuôi thú cưng, nuôi quái vật, avatar, quà thật, học bổng.
    Giá sao và điều kiện theo "Quy chế đổi sao" (bản 22/10/2026) – sửa ở khối Q_ dưới đây.
    Trạng thái lưu trong P._shop, đồng bộ lên máy chủ cùng tiến độ học.
    Tổng sao đã kiếm (Bảng vàng) không bị trừ khi đổi quà; chỉ "sao trong ví" bị trừ.
@@ -31,6 +31,10 @@ const GIFTS = [
   {id:'dat_nan', n:'Đất nặn 6 màu', vnd:'15.000đ', p:280},      {id:'sap_mau', n:'Sáp màu 12 màu', vnd:'15.000đ', p:280},
   {id:'xe', n:'Xe kéo trớn mini', vnd:'15.000đ', p:280},        {id:'rubik', n:'Rubik 3x3', vnd:'20.000đ', p:350},
   {id:'hop_but', n:'Hộp bút hình thú', vnd:'20.000đ', p:350}];
+const HB = [
+  {id:'dong', n:'Học bổng Đồng', p:350, vnd:'300.000đ', les:12, zoom:0, c:'#B8742F'},
+  {id:'bac',  n:'Học bổng Bạc',  p:500, vnd:'600.000đ', les:15, zoom:0, c:'#7D8DA3'},
+  {id:'vang', n:'Học bổng Vàng', p:650, vnd:'1.000.000đ', les:18, zoom:0, c:'#C99A00'}];
 const Q_ST = {cho:'Chờ cô duyệt', duyet:'Cô đã duyệt', da_trao:'Cô đã trao quà', tu_choi:'Cô chưa duyệt · đã hoàn sao'};   // LỚP OFFLINE: chữ như bảng của cô
 
 /* ---------- ví sao ---------- */
@@ -105,8 +109,8 @@ function parentGate(title, detail, ok){
 }
 function qCanReal(){
   if(DEMO){ demoGate('qua'); return false; }
-  if(TEACHER){ toast('Chế độ giáo viên chỉ xem thử, không đổi quà thật.'); return false; }
-  if(!KID || KID.temp){ toast('Ba mẹ đăng nhập bằng tên con và SĐT/Gmail để đổi quà thật nhé.'); askProfile(KID&&KID.group||'', route); return false; }
+  if(TEACHER){ toast('Chế độ giáo viên chỉ xem thử, không đổi quà thật và học bổng.'); return false; }
+  if(!KID || KID.temp){ toast('Ba mẹ nhập mã con và PIN do CES cấp để đổi quà thật nhé.')   /* LỚP OFFLINE: theo bản cuộc thi 26/11 */; askProfile(KID&&KID.group||'', route); return false; }
   return true;
 }
 function qCode(prefix){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s=''; for(let i=0;i<4;i++) s+=A[Math.floor(Math.random()*A.length)]; return prefix+'-'+s; }
@@ -166,6 +170,7 @@ function viewQua(sub){
   if(sub==='quai-vat') return viewMons();
   if(sub==='avatar') return viewAvatar();
   if(sub==='qua-that') return viewGifts();
+  if(sub==='hoc-bong') return viewHB();
   if(sub==='phieu') return viewOrders();
   const s=shop(), p=s.pets[s.petSel||0], m=s.mons[s.monSel||0];
   document.body.classList.add('hub');
@@ -176,6 +181,7 @@ function viewQua(sub){
       ${hubTile({href:'#/qua/quai-vat', img:m?monImg(m):Q_IMG+'mon_lua_2.webp', size:'auto 86%', pos:'50% 90%', bg:'#EDE4FF', c:'#7B5CD6', t:'Nuôi quái vật', sub:m?`${MON_SP[m.sp].n} · ${monStageName(m)}`:`Trứng ${Q_RULE.egg} ⭐ · lớn lên khi con học`})}
       ${hubTile({href:'#/qua/avatar', img:avaSrc(), size:'auto 92%', pos:'50% 100%', bg:'#FFE4EC', c:'#E3487A', t:'Avatar của con', sub:'Trang phục · nền · khung'})}
       ${hubTile({href:'#/qua/qua-that', img:Q_IMG+'gift_rubik.webp', size:'auto 70%', pos:'50% 60%', bg:'#FFF1CC', c:'#F28C00', t:'Quà thật', sub:'Quà 5.000–20.000đ · 120–350 ⭐'})}
+      ${hubTile({href:'#/qua/hoc-bong', img:Q_IMG+'hocbong.webp', size:'auto 76%', pos:'50% 60%', bg:'#FFF8E1', c:'#C99A00', t:'Học bổng', sub:'Khoá học Anh – Trung tại CES'})}
       ${hubTile({href:'#/qua/phieu', img:Q_IMG+'gift_so_tay.webp', size:'auto 70%', pos:'50% 60%', bg:'#E4F0FF', c:'#2F6FD6', t:'Phiếu & quy chế', sub:s.orders.length?`${s.orders.length} phiếu của con`:'Cách đổi sao'})}
     </div></div>`;
   qSay('hub', 'Chào mừng con đến Phòng đổi quà! Con dùng sao kiếm được khi học để nuôi thú cưng, nuôi quái vật, chọn trang phục, hoặc đổi quà thật.');
@@ -338,17 +344,41 @@ function viewGifts(){
   qFrame('🎁 Quà thật', `<div class="q-gifts"><div class="q-cond">
       <span class="${open?'ok':''}">${open?'✅':'🔒'} Học xong ${Math.min(les,Q_RULE.giftMinLessons)}/${Q_RULE.giftMinLessons} ngày</span>
       <span class="${used<Q_RULE.giftMax?'ok':''}">🎁 Đã đổi ${used}/${Q_RULE.giftMax} món</span>
-      <span>👨‍👩‍👧 Ba mẹ xác nhận · CES gửi quà về nhà</span></div>
+      <span>👨‍👩‍👧 Ba mẹ xác nhận · CES kiểm tra rồi trao quà</span></div>
     <div class="q-cards gifts">${cards}</div></div>`, 'qgift');
   app.querySelectorAll('.q-card').forEach(b=>b.onclick=()=>{
     const g=GIFTS.find(x=>x.id===b.dataset.id); sfx.pop();
     if(!qCanReal()) return;
     if(!open){ sfx.no(); return toast(`Con học xong ${Q_RULE.giftMinLessons} ngày thì đổi được quà thật nhé! Con đã học ${les} ngày.`); }
-    if(used>=Q_RULE.giftMax){ sfx.no(); return toast(`Mỗi bạn đổi tối đa ${Q_RULE.giftMax} món quà thật ở mỗi level (Little Seed, Seedling).`); }
+    if(used>=Q_RULE.giftMax){ sfx.no(); return toast(`Mỗi bạn đổi tối đa ${Q_RULE.giftMax} món quà thật trong cả khoá học.`); }
     if(qWallet()<g.p) return qNoStars(g.p);
-    parentGate(g.n, `${g.p} ⭐ · giá tham khảo ${g.vnd}. CES sẽ nhắn ba mẹ qua Zalo hỏi địa chỉ nhận quà. Mẫu thật có thể khác hình minh hoạ.`, ()=>qOrder('gift', g));
+    parentGate(g.n, `${g.p} ⭐ · giá tham khảo ${g.vnd}. Mẫu thật có thể khác hình minh hoạ.`, ()=>qOrder('gift', g));
   });
   qSay('gift', 'Quà thật cần ba mẹ xác nhận. Con gọi ba mẹ cùng chọn nhé!');
+}
+
+/* ---------- học bổng ---------- */
+function viewHB(){
+  const les=qLessons(), zo=qZooms(), w=qWallet(), has=shop().orders.some(o=>o.kind==='hb' && o.st!=='tu_choi');
+  const cards=HB.map(h=>{ const okL=les>=h.les, okZ=zo>=h.zoom, okS=w>=h.p, can=okL&&okZ&&okS&&!has;
+    return `<div class="q-hb ${can?'can':''}" style="--hc:${h.c}"><img src="${Q_IMG}hocbong.webp" alt="">
+      <h4>${h.n}</h4><div class="q-hb-v">${h.vnd}</div>
+      <ul><li class="${okL?'ok':''}">${okL?'✅':'⬜'} Học xong ${h.les} ngày <small>(${les}/${h.les})</small></li>
+        ${h.zoom?`<li class="${okZ?'ok':''}">${okZ?'✅':'⬜'} Tham gia ${h.zoom} buổi Zoom <small>(${zo}/${h.zoom})</small></li>`:''}
+        <li class="${okS?'ok':''}">${okS?'✅':'⬜'} ${h.p} ⭐ trong ví <small>(${w}/${h.p})</small></li></ul>
+      <div class="q-hb-bar"><i style="width:${Math.min(100,Math.round(w/h.p*100))}%"></i></div>
+      <button class="btn ${can?'g':'y'}" data-id="${h.id}" type="button">${has?'Đã đổi học bổng':(can?'Đổi học bổng':'Cố lên con!')}</button></div>`; }).join('');
+  qFrame('🎓 Học bổng', `<div class="q-hbwrap"><div class="q-hbs">${cards}</div>
+    <p class="q-hint">Phiếu học bổng trừ vào học phí khoá Anh – Trung đăng ký mới tại CES trong 60 ngày kể từ ngày cấp. Mỗi bạn đổi 1 phiếu. Không quy đổi tiền mặt.</p></div>`, 'qhb');
+  app.querySelectorAll('.q-hb button').forEach(b=>b.onclick=()=>{
+    const h=HB.find(x=>x.id===b.dataset.id); sfx.pop();
+    if(!qCanReal()) return;
+    if(has){ return toast('Mỗi bạn đổi được 1 phiếu học bổng. Con xem phiếu ở mục Phiếu & quy chế nhé.'); }
+    if(les<h.les || zo<h.zoom){ sfx.no(); return toast(`Con cần học xong ${h.les} ngày${h.zoom?` và ${h.zoom} buổi Zoom`:''} để đổi ${h.n}.`); }
+    if(qWallet()<h.p) return qNoStars(h.p);
+    parentGate(h.n+' – '+h.vnd, `${h.p} ⭐. CES gửi giấy chứng nhận học bổng qua Zalo trong 5 ngày làm việc sau khi kiểm tra tiến độ.`, ()=>qOrder('hb', h));
+  });
+  qSay('hb', 'Học bổng dành cho bạn chăm học. Con gọi ba mẹ cùng xem nhé!');
 }
 
 /* ---------- phiếu & quy chế ---------- */
@@ -356,14 +386,14 @@ function viewOrders(){
   const s=shop();
   const rows=s.orders.length?s.orders.map(o=>`<li class="q-ord st-${o.st}"><img src="${o.kind==='hb'?Q_IMG+'hocbong.webp':Q_IMG+'gift_'+o.id+'.webp'}" alt="">
       <span><b>${esc(o.n)}</b><small>${o.code} · ${new Date(o.at).toLocaleDateString('vi-VN')} · ${o.p} ⭐</small>${o.note?`<small>${esc(o.note)}</small>`:''}</span>
-      <em>${Q_ST[o.st]||o.st}</em></li>`).join(''):'<li class="q-ord none">Con chưa có phiếu nào. Quà thật sẽ hiện ở đây.</li>';
+      <em>${Q_ST[o.st]||o.st}</em></li>`).join(''):'<li class="q-ord none">Con chưa có phiếu nào. Quà thật và học bổng sẽ hiện ở đây.</li>';
   qFrame('🧾 Phiếu & quy chế', `<div class="q-ords"><h4>Phiếu của con</h4><ul>${rows}</ul>
       ${s.orders.length?'<button class="btn y sm" id="qRefresh" type="button">🔄 Xem trạng thái mới</button>':''}</div>
     <div class="q-rules"><h4>Quy chế đổi sao (tóm tắt)</h4><ol>
       <li><b>Sao chỉ đến từ việc học.</b> Mỗi buổi làm đủ khoảng 30 ⭐; sao buổi Zoom, buổi Tổng kết và clip do cô cộng sau khi cô xem.</li>
       <li><b>Đổi quà không làm tụt hạng.</b> Bảng vàng tính tổng sao đã kiếm; chỉ sao trong ví bị trừ.</li>
       <li><b>Quà ảo</b> (thú cưng, quái vật, avatar) đổi ngay, không hoàn lại thành sao. Thú cưng không bao giờ ốm hay mất.</li>
-      <li><b>Quà thật</b> 120–350 ⭐: mở khi con học xong 6 buổi, tối đa 2 món mỗi level.</li>
+      <li><b>Quà thật</b> 120–350 ⭐: mở khi con học xong 6 buổi, tối đa 2 món. <b>Học bổng</b> 350–650 ⭐: theo số buổi đã học, tối đa 1 phiếu.</li>
       <li><b>Ba mẹ xác nhận</b> ở Cổng ba mẹ; CES kiểm tra tiến độ trong 3 ngày làm việc. Phiếu không duyệt được hoàn đủ sao.</li>
       <li>Phòng đổi quà mở đến hết 7 ngày sau Chung kết. Thắc mắc, ba mẹ nhắn nhóm Zalo của cuộc thi.</li></ol>
       <a class="btn g sm" href="${ZALO_LINK}" target="_blank" rel="noopener">📤 Nhóm Zalo cuộc thi</a></div>`, 'qord');

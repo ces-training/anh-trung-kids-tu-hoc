@@ -5,7 +5,7 @@
    - Số "buổi" của game = số ngày web con đã học xong.
    - Rồng trùm theo Unit: mở khi con học xong mọi ngày của Unit; câu đố lấy từ các ngày của Unit đó.
    - Đố từ, Luyện chiêu: từ của những ngày con đã học xong, ưu tiên 20 ngày gần nhất.
-   - Quà thật (tối đa 2 món mỗi level, cần học xong 6 ngày) gửi cô qua lệnh redeem của máy chủ tự học; CES gửi quà về nhà, KHÔNG có học bổng;
+   - Quà thật (tối đa 2 món cả khoá, cần học xong 6 ngày) và học bổng gửi cô qua lệnh redeem của máy chủ lớp;
      trạng thái phiếu, sao cô thưởng lấy về bằng coSync (tệp *-thuong.js của web).
    - Quái vật của bản cũ (nở sau 1 ngày học) được giữ nguyên trạng thái, không quay về trứng.
    Giá sao giữ như web cuộc thi (chị Duyên chốt 26/11/2026).
@@ -39,24 +39,24 @@ window.qcStagePool = function () {
 };
 window.qcBossOpen = function () { const U = UNITS[CHANG - 1]; return TEACHER || (!!U && unitDone(U)); };
 
-/* ---------- quà thật: gửi cô qua máy chủ tự học ---------- */
+/* ---------- quà thật, học bổng: gửi cô qua máy chủ lớp ---------- */
 window.giftUsed = function () { return shop().orders.filter(o => (o.kind || 'gift') === 'gift' && o.st !== 'tu_choi').length; };   // phiếu bản cũ không có kind = quà
 window.qCanReal = function () {
-  if (TEACHER) { toast('Chế độ giáo viên chỉ xem thử, không đổi quà thật.'); return false; }
-  if (!kidId()) { toast('Ba mẹ đăng nhập bằng mã khoá học của con, rồi đổi quà nhé.'); return false; }
+  if (TEACHER) { toast('Chế độ giáo viên chỉ xem thử, không đổi quà thật và học bổng.'); return false; }
+  if (!kidId()) { toast('Ba mẹ đăng nhập để nối web với lớp của con, rồi đổi quà nhé.'); return false; }
   return true;
 };
 window.qOrder = function (kind, item) {
   const s = shop(); if (!qSpend(item.p)) return;
-  const o = { code: qCode('QUA'), kind, id: item.id, n: item.n, p: item.p, at: Date.now(), st: 'cho' };
+  const o = { code: qCode(kind === 'hb' ? 'HB' : 'QUA'), kind, id: item.id, n: item.n, p: item.p, at: Date.now(), st: 'cho' };
   s.orders.unshift(o); qSave();
-  api({ action: 'redeem', id: kidId(), code: o.code, qua: item.id, ten_qua: item.n + (item.vnd ? ' (' + item.vnd + ')' : ''), sao: item.p });
+  api({ action: 'redeem', id: kidId(), code: o.code, qua: kind === 'hb' ? 'hocbong' : item.id, ten_qua: item.n + (item.vnd ? ' (' + item.vnd + ')' : ''), sao: item.p });
   route(); sfx.win(); confetti(24); hdSay('Cảm ơn ba mẹ. Cô đã nhận phiếu, cô sẽ kiểm tra và báo ba mẹ qua Zalo nhé.');
   const ov = document.createElement('div'); ov.className = 'overlay pp';
   ov.innerHTML = `<div class="modal pp-box q-done" role="dialog"><button class="pp-x" aria-label="Đóng">✕</button>
-    <img src="${Q_IMG + 'gift_' + item.id + '.webp'}" alt="">
+    <img src="${kind === 'hb' ? Q_IMG + 'hocbong.webp' : Q_IMG + 'gift_' + item.id + '.webp'}" alt="">
     <h3>Đã gửi cô · phiếu ${o.code}</h3><p><b>${esc(item.n)}</b> · ${item.p} ⭐</p>
-    <p>Cô kiểm tra rồi nhắn ba mẹ qua Zalo để hỏi địa chỉ nhận quà, sau đó CES gửi quà về nhà cho con. Nếu cô chưa duyệt, sao được hoàn đủ vào ví.</p>
+    <p>${kind === 'hb' ? 'Cô kiểm tra tiến độ học của con rồi gửi giấy chứng nhận học bổng cho ba mẹ.' : 'Cô xem trên bảng của cô rồi trao quà cho con ở buổi học trên lớp.'} Nếu cô chưa duyệt, sao được hoàn đủ vào ví.</p>
     <div class="row"><a class="btn y" href="#/qua/phieu">🧾 Phiếu của con</a></div></div>`;
   document.body.appendChild(ov);
   const close = () => ov.remove(); ov.querySelector('.pp-x').onclick = close; ov.addEventListener('click', e => { if (e.target === ov || e.target.closest('a')) close(); });
@@ -66,17 +66,18 @@ window.qOrder = function (kind, item) {
 window.viewOrders = function () {
   const s = shop(); coSync(true);
   const aw = coAwards().slice().sort((a, b) => b.at - a.at);
-  const rows = s.orders.length ? s.orders.map(o => `<li class="q-ord st-${o.st}"><img src="${Q_IMG + 'gift_' + o.id + '.webp'}" alt="">
+  const rows = s.orders.length ? s.orders.map(o => `<li class="q-ord st-${o.st}"><img src="${o.kind === 'hb' ? Q_IMG + 'hocbong.webp' : Q_IMG + 'gift_' + o.id + '.webp'}" alt="">
       <span><b>${esc(o.n)}</b><small>${o.code} · ${new Date(o.at).toLocaleDateString('vi-VN')} · ${o.p} ⭐</small>${o.note ? `<small>${esc(o.note)}</small>` : ''}</span>
-      <em>${Q_ST[o.st] || o.st}</em></li>`).join('') : '<li class="q-ord none">Con chưa có phiếu nào. Quà thật sẽ hiện ở đây.</li>';
-  qFrame('🧾 Phiếu & cách kiếm sao', `<div class="q-ords"><h4>Sao cô thưởng <small>⭐ ${coSum()}</small></h4><ul>${aw.length ? aw.map(a => `<li class="q-ord"><img src="../seedling/tai-nguyen/nhan-vat/huou_huou2_a.webp" alt=""><span><b>+${a.n} ⭐ · ${esc(a.why || 'Cô thưởng')}</b><small>${new Date(a.at).toLocaleDateString('vi-VN')}</small></span></li>`).join('') : '<li class="q-ord none">Sao cô thưởng trên lớp sẽ hiện ở đây.</li>'}</ul>
+      <em>${Q_ST[o.st] || o.st}</em></li>`).join('') : '<li class="q-ord none">Con chưa có phiếu nào. Quà thật và học bổng sẽ hiện ở đây.</li>';
+  qFrame('🧾 Phiếu & cách kiếm sao', `<div class="q-ords"><h4>Sao cô thưởng ở lớp <small>⭐ ${coSum()}</small></h4><ul>${aw.length ? aw.map(a => `<li class="q-ord"><img src="../seedling/tai-nguyen/nhan-vat/huou_huou2_a.webp" alt=""><span><b>+${a.n} ⭐ · ${esc(a.why || 'Cô thưởng')}</b><small>${new Date(a.at).toLocaleDateString('vi-VN')}</small></span></li>`).join('') : '<li class="q-ord none">Sao cô thưởng trên lớp sẽ hiện ở đây.</li>'}</ul>
       <h4>Phiếu của con</h4><ul>${rows}</ul>${s.orders.length ? '<button class="btn y sm" id="qRefresh" type="button">🔄 Xem trạng thái mới</button>' : ''}</div>
     <div class="q-rules"><h4>Sao đến từ đâu?</h4><ol>
       <li><b>Mỗi bước học xong</b>: 1 sao cho mỗi thẻ, câu hỏi hay lượt nói con làm xong (đúng hay chưa đúng đều được).</li>
       <li><b>Học xong một ngày web</b>: +${PTS.dayDone} ⭐. <b>Ôn nhanh trong Hộp ôn</b>: +${PTS.review} ⭐ mỗi lượt, tối đa ${PTS.reviewMaxDay} lượt một ngày.</li>
-      <li><b>Cô thưởng</b>: cô thưởng trên bảng của cô, sao tự vào ví của con.</li>
+      <li><b>Cô thưởng ở lớp</b>: cô thưởng trên bảng của cô, sao tự vào ví của con.</li>
       <li><b>Đổi quà không làm mất sao đã kiếm.</b> Chỉ sao trong ví bị trừ. Quà ảo (thú cưng, quái vật, vườn, avatar) đổi ngay, không hoàn lại. Thú cưng không bao giờ ốm hay mất.</li>
-      <li><b>Quà thật</b> ${GIFTS[0].p}–${GIFTS[GIFTS.length - 1].p} ⭐: mở khi con học xong ${Q_RULE.giftMinLessons} ngày web, tối đa ${Q_RULE.giftMax} món mỗi level (Little Seed, Seedling). Ba mẹ xác nhận, cô duyệt, hỏi địa chỉ qua Zalo rồi CES gửi quà về nhà.</li>
+      <li><b>Quà thật</b> ${GIFTS[0].p}–${GIFTS[GIFTS.length - 1].p} ⭐: mở khi con học xong ${Q_RULE.giftMinLessons} ngày web, tối đa ${Q_RULE.giftMax} món cả khoá. Ba mẹ xác nhận, cô duyệt và trao ở lớp.</li>
+      <li><b>Học bổng</b> ${HB[0].p}–${HB[HB.length - 1].p} ⭐: theo số ngày web đã học, tối đa 1 phiếu, trừ vào học phí khoá Anh – Trung đăng ký mới tại CES.</li>
       <li>Phiếu cô chưa duyệt được hoàn đủ sao vào ví.</li></ol></div>`, 'qord');
   const r = document.getElementById('qRefresh'); if (r) r.onclick = () => { sfx.pop(); toast('Đang xem trạng thái…'); coSync(true); setTimeout(() => { if (/^#\/qua\/phieu/.test(location.hash)) viewOrders(); }, 2500); };
 };
@@ -112,6 +113,7 @@ window.viewMons = (function (f) { return function () { window.__qcChangGiu = 0; 
     'Chào mừng con đến Phòng đổi quà! Con dùng sao kiếm được khi học để nuôi thú cưng, nuôi quái vật, chọn trang phục, hoặc đổi quà thật.': 'hd_092.mp3',
     'Con chọn nhân vật, trang phục, nền và khung cho ảnh đại diện của con nhé.': 'hd_101.mp3',
     'Quà thật cần ba mẹ xác nhận. Con gọi ba mẹ cùng chọn nhé!': 'hd_102.mp3',
+    'Học bổng dành cho bạn chăm học. Con gọi ba mẹ cùng xem nhé!': 'hd_110.mp3',
     'Con chạm vào bạn ấy, cho bạn ấy ăn hoặc chơi cùng bạn ấy nhé.': 'hd_094.mp3',
     'Con chạm vào chỗ muốn ném bóng nhé!': 'hd_096.mp3',
     'Con nghe rồi chạm đúng tranh để quái vật tung chiêu nhé!': 'hd_107.mp3',
