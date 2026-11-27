@@ -29,6 +29,7 @@ function updateStars() { updStars(); }
 function voicePlay(src, o) {
   o = o || {};
   if (!src) { if (o.onerr) o.onerr(); return; }
+  if (/\/thu-cung\/pet_/.test(src) && src.indexOf('?') < 0) src += '?v=20261127a';   // giọng thú cưng đã cắt đuôi ồn: buộc máy tải bản mới
   playFile(src).then(v => { const f = v === false ? (o.onerr || o.onend) : o.onend; if (f) f(); });
 }
 function askProfile() {}
