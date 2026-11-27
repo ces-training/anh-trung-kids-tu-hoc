@@ -20,7 +20,9 @@ Object.defineProperty(window, 'TEACHER', { configurable: true,
 Object.defineProperty(window, 'KID', { configurable: true,
   get: () => ({ id: (typeof P === 'object' && P && P.kidId) || '', group: LOP, temp: false, name: (typeof P === 'object' && P && P.name) || '' }) });
 
-function myPoints() { return (P.stars || 0) + coSum(); }
+/* Xem thử cho cô: mở ?gv=1&sao=1500 thì ví có thêm 1500 sao GIẢ (chỉ trong trang đang mở, không ghi vào sao thật của con). Chỉ có tác dụng ở chế độ cô. */
+function xemThuSao() { if (!TEACHER) return 0; const m = /[?&]sao=(\d{1,5})/.exec(location.search); return m ? +m[1] : 0; }
+function myPoints() { return (P.stars || 0) + coSum() + xemThuSao(); }
 function doneCount() { return daysDone(); }
 function hubTile(o) { return tile(o); }
 function updateStars() { updStars(); }
